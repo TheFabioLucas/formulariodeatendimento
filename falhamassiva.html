@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="digitalnet.jpeg" type="image/Jpeg">
+<title>Falha Massiva</title>
+<style>
+    /* Estilos principais */
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #295ba5;
+        color: #ffffff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        padding: 20px;
+        position: relative;
+    }
+
+    .container {
+        background-color: rgba(0, 0, 0, 0.5); /* Preto com 50% de transparência */
+        border-radius: 10px;
+        padding: 30px;
+        width: 100%;
+        max-width: 600px;
+        text-align: center;
+        border: 2px solid #dadf3f;
+    }
+
+    h1 {
+        color: #dadf3f;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+        text-align: left;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    input[type="text"], textarea, select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #dadf3f;
+        border-radius: 5px;
+        background-color: #e0e0e0;
+        color: #000;
+    }
+
+    button {
+        background-color: #dadf3f;
+        color: #000;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 15px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    button:hover {
+        background-color: #a5c527;
+    }
+
+    .form-actions {
+        margin-top: 20px;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .notification {
+        display: none;
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #dadf3f;
+        color: #000000;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 16px;
+        z-index: 1000;
+
+    }
+
+    #btnvoltar {
+    display: flex;
+    justify-content: flex-end; /* Alinha o botão à direita */
+    margin-top: 15px;
+    padding: 10px 20px;
+    margin-bottom: 15px;
+
+    .map-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+}
+
+    #map-image {
+    width: 20px !important; /* Defina o tamanho desejado */
+    height: 20px !important; /* Defina o tamanho desejado */
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+    #localizacao_cto {
+        padding-left: 20px; /* Ajusta a posição para o espaço da imagem */
+    }
+}
+
+.footer-note {
+    position: fixed;
+    bottom: 10px;
+    left: 0; /* Define o lado esquerdo para 0 */
+    right: 0; /* Define o lado direito para 0 */
+    width: max-content; /* Isso fará com que o .footer-note se ajuste ao seu conteúdo */
+    margin: auto; /* Centraliza o elemento horizontalmente */
+    font-size: 14px;
+    color: #ffffff; /* Branco */
+    padding: 0px; /* Espaçamento interno para melhor visualização */
+    text-align: center; /* Garante que o texto dentro do .footer-note também esteja centralizado */
+}
+</style>
+<script>
+    // Função para mostrar uma notificação temporária
+    function mostrarNotificacao(mensagem) {
+        const notificacao = document.getElementById('notification');
+        notificacao.textContent = mensagem;
+        notificacao.style.display = 'block';
+        setTimeout(() => {
+            notificacao.style.display = 'none';
+        }, 3000);
+    }
+
+    // Função para copiar os dados de falha massiva
+    function copiarDadosFalhaMassiva() {
+        const caixasCTO = document.getElementById('caixas_CTO').value || "N/A";
+        const quantidadeDeClientes = document.getElementById('quantidadeDeClientes').value || "N/A";
+        const horainformada = document.getElementById('horaInformada').value || "N/A";
+        const horariodeabertura = document.getElementById('horariodeabertura').value || "N/A";
+        const horariodeQueda = document.getElementById('horariodeQueda').value || "N/A";
+        const localizaçãodacto = document.getElementById('localizaçãodacto').value || "N/A";
+        const procedimentoSelecionado = document.getElementById('procedimentos').value || "Nenhum procedimento selecionado";
+
+        const texto = `*** FALHA MASSIVA ***
+=====================================
+Rompimento: ${procedimentoSelecionado}
+=====================================
+Caixas: ${caixasCTO}
+Quantidade de Clientes: ${quantidadeDeClientes}
+Hora informada: ${horainformada}
+Horário de Abertura: ${horariodeabertura}
+Horário de Queda: ${horariodeQueda}
+Localização da CTO: ${localizaçãodacto}
+=====================================
+=====================================
+`;
+
+        navigator.clipboard.writeText(texto).then(() => {
+            mostrarNotificacao('Dados copiados para a área de transferência!');
+        }).catch(err => {
+            console.error('Falha ao copiar!', err);
+        });
+    }
+
+    // Função para zerar os dados do formulário
+    function zerarDadosAtendimento() {
+        document.getElementById('form-falhamassiva').reset();
+    }
+
+    function preenchervoltar() {
+        window.location.href = 'Mascara 2.0.html';
+    }
+
+    function abrirMapa() {
+        window.open("https://morfeu.geogridmaps.com.br/digitalnet/", "_blank");
+    }
+
+    function abrirZabbix() {
+        window.open("http://zabbix.digitalnetms.com.br/zabbix.php?action=dashboard.view", "_blank");
+    }
+
+    function adicionarProcedimento() {
+    // Obtém o valor selecionado no select de procedimentos
+    const procedimentoSelecionado = document.getElementById('procedimentos').value;
+
+    // Referência ao campo de input "horaInformada"
+    const horaInformadaInput = document.getElementById('horaInformada');
+
+    // Definindo horas diferentes para cada procedimento
+    let horaAssociada = "";
+
+    switch (procedimentoSelecionado) {
+        case "NIVEL 1":
+            horaAssociada = "24 HORAS"; // Horário específico para nível 1
+            break;
+        case "NIVEL 2":
+            horaAssociada = "12 HORAS"; // Horário específico para nível 2
+            break;
+        case "NIVEL 3":
+            horaAssociada = "5 HORAS"; // Horário específico para nível 3
+            break;
+        default:
+            horaAssociada = ""; // Limpa o campo se "Selecione..." for escolhido
+            break;
+    }
+
+    // Atribui o horário associado ao campo "horaInformada"
+    horaInformadaInput.value = horaAssociada;
+}
+
+
+</script>
+</head>
+<body>
+<div id="notification" class="notification"></div>
+
+<div class="container">
+    <h1>Falha Massiva</h1>
+    <div><button type="button" id="btnvoltar" onclick="preenchervoltar()">Voltar</button>
+    </div>
+    <form id="form-falhamassiva">
+        <div class="form-group">
+            <label for="procedimentos">NIVEL DE ROMPIMENTO</label>
+                                <select id="procedimentos" onchange="adicionarProcedimento()">
+                <option value="">Selecione...</option>
+                <option value="NIVEL 1">NIVEL 1</option>
+                <option value="NIVEL 2">NIVEL 2</option>
+                <option value="NIVEL 3">NIVEL 3</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="caixas_CTO">Caixas:</label>
+            <textarea id="caixas_CTO" name="caixas_CTO"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="quantidadeDeClientes">Quantidade de Clientes:</label>
+            <input type="text" id="quantidadeDeClientes" name="quantidadeDeClientes">
+        </div>
+
+        <div class="form-group">
+            <label for="horaInformada">Hora informada:</label>
+            <input type="text" id="horaInformada" name="horaInformada">
+        </div>
+
+        <div class="form-group">
+            <label for="horariodeabertura">Horário de Abertura de Chamado:</label>
+            <input type="text" id="horariodeabertura" name="horariodeabertura">
+        </div>
+
+        <div class="form-group">
+            <label for="horariodeQueda">Horário da Queda:</label>
+            <input type="text" id="horariodeQueda" name="horariodeQueda">
+        </div>
+
+        <div class="form-group" id="map-container">
+            <label for="localizaçãodacto">Localização da CTO:</label>
+            <input type="text" id="localizaçãodacto" name="localizaçãodacto">
+            <img src="geogrid.png" alt="Mapa" id="map-image" onclick="abrirMapa()" style="width: 150px; height: 50px; right:50px; cursor: pointer;">
+            <img src="zabbix.png" alt="zabbix1" id="map-image" onclick="abrirZabbix()" style="width: 100px; height: 60px; cursor: pointer; right:50px;">
+        </div>
+
+        <div class="form-actions">
+            <button type="button" onclick="copiarDadosFalhaMassiva()">Copiar Dados</button>
+            <button type="button" onclick="zerarDadosAtendimento()">Zerar Dados</button>
+        </div>
+        <div class="notification" id="notification"></div>
+    <div class="footer-note">Desenvolvido por Fábio Lucas e Herick Malaquias</div>
+    </form>
+</div>
+</body>
+</html>

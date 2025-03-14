@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Solicitação de encaixe</title>
+<style>
+    /* Estilos principais */
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #295ba5;
+        color: #ffffff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        padding: 20px;
+    }
+
+    .container {
+        background-color: rgba(0, 0, 0, 0.5); /* Preto com 50% de transparência */
+        border-radius: 10px;
+        padding: 30px;
+        width: 100%;
+        max-width: 600px;
+        text-align: center;
+        border: 2px solid #dadf3f;
+        position: relative;
+    }
+
+    h1 {
+        color: #dadf3f;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+        text-align: left;
+        width: 100%; /* Agora cada form-group ocupa toda a largura */
+    }
+
+    .form-group-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px; /* Espaço entre os campos */
+        }
+
+        .form-group select {
+    margin-bottom: 8px; /* Aumenta a distância entre as text areas */
+}
+
+    label {
+        display: block;
+        margin-bottom: 5px;
+        color: #ffffff;
+    }
+
+    input[type="text"], input[type="tel"], textarea, select, input[type="date"] {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #dadf3f;
+        border-radius: 5px;
+        background-color: #e0e0e0;
+        color: #000;
+    }
+
+    button {
+        background-color: #dadf3f;
+        color: #000;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 15px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    button:hover {
+        background-color: #a5c527;
+    }
+
+    .form-actions {
+        margin-top: 20px;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .notification {
+        display: none;
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #dadf3f;
+        color: #000000;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 16px;
+        z-index: 1000;
+    }
+
+    .agendamento-container {
+    display: flex;
+    flex-direction: column; /* Alinha os agendamentos em coluna */
+    gap: 20px; /* Espaçamento entre os agendamentos */
+    width: 100%; /* Ajusta para ocupar a largura total do contêiner */
+}
+
+.agendamento-item {
+    display: flex;
+    flex-direction: row; /* Alinha data e período lado a lado */
+    justify-content: space-between; /* Espaça os itens igualmente */
+    gap: 20px; /* Espaçamento entre a data e o período */
+}
+
+.form-group,
+.periodo-container {
+    flex: 1; /* Permite que os itens se expandam igualmente */
+}
+
+.periodo-container {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Espaço entre os elementos do período */
+}
+
+.small-button {
+    width: 30px;
+    height: 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    font-size: 14px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+}
+
+.input-with-dropdown {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.input-with-dropdown input {
+    padding: 8px;
+    border: 1px solid #dadf3f;
+    border-radius: 5px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.dropdown-button {
+    padding: 8px;
+    border: none;
+    background-color: #dadf3f;
+    color: #000;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%; /* Posiciona abaixo do input */
+    left: 0;
+    color: #000;
+    background-color: #e0e0e0;
+    border: 1px solid #dadf3f;
+    border-radius: 5px;
+    width: 100%;
+    box-sizing: border-box;
+    z-index: 1000;
+}
+
+.dropdown-menu div {
+    padding: 8px;
+    cursor: pointer;
+}
+
+.dropdown-menu div:hover {
+    background-color: #dadf3f;
+}
+</style>
+    
+<script>
+    // Função para mostrar uma notificação temporária
+    function mostrarNotificacao(mensagem) {
+        const notificacao = document.getElementById('notification');
+        notificacao.textContent = mensagem;
+        notificacao.style.display = 'block';
+        setTimeout(() => {
+            notificacao.style.display = 'none';
+        }, 3000);
+    }
+
+    
+    // Função para copiar os dados de falha massiva
+    function copiarDadosFalhaMassiva() {
+        const planoInput1 = document.getElementById('planoInput').value || "Nenhum plano informado ou descrito";
+        const motivo1 = document.getElementById('motivo').value || "Sem motivo informado";
+        const Agendado = document.getElementById('agendado1').value || "Nenhuma data de agendamento atual selecionado";
+        const Periodo1 = document.getElementById('periodo1').value || "Nenhum periodo selecionado";
+        const Agendado2 = document.getElementById('agendado2').value || "Nenhuma data de interesse selecionada";
+        const Periodo2 = document.getElementById('periodo2').value || "Nenhuma data de interesse selecionada";
+        const Obs1 = document.getElementById('Obs').value || "Nenhuma observação a acrescentar";
+        
+        const texto = 
+`
+Plano: ${planoInput1}
+Motivo: ${motivo1}
+Data do Agendamento Atual: ${Agendado} ${Periodo1}
+Data do Interesse do Agendamento: ${Agendado2} ${Periodo2}
+
+Obs: ${Obs1}
+`;
+
+        navigator.clipboard.writeText(texto).then(() => {
+            mostrarNotificacao('Dados copiados para a área de transferência!');
+        }).catch(err => {
+            console.error('Falha ao copiar!', err);
+        });
+    }
+
+    // Função para zerar os dados do formulário
+    function zerarDadosAtendimento() {
+        document.getElementById('form-falhamassiva').reset();
+    }
+
+    function preenchervoltar() {
+        window.location.href = 'Mascara 2.0.html';
+    }
+
+    function adicionarConfirmacao() {
+    const select = document.getElementById('confirmacao');
+    const textarea = document.getElementById('resultado');
+    const selectedValue = select.value;
+
+    if (selectedValue) {
+        textarea.value = selectedValue; // Adiciona a seleção ao textarea
+    }
+}
+
+function toggleDropdown() {
+    const dropdownMenu = document.getElementById('dropdownMenu');
+    dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none' : 'block';
+}
+
+function selecionarPlano(plano) {
+    const input = document.getElementById('planoInput');
+    input.value = plano;
+    toggleDropdown(); // Fecha o menu após a seleção
+}
+
+
+</script>
+</head>
+<body>
+<div id="notification" class="notification"></div>
+
+<div class="container">
+    <h1>Solicitação de encaixe</h1>
+    <div><button type="button" id="btnvoltar" onclick="preenchervoltar()">Voltar</button>
+    </div>
+    <form id="form-falhamassiva">
+        <div class="form-group">
+            <label for="planoInput">Plano:</label>
+            <div class="input-with-dropdown">
+                <input type="text" id="planoInput" placeholder="Digite ou selecione..." />
+                <button type="button" class="dropdown-button" onclick="toggleDropdown()">▼</button>
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <div onclick="selecionarPlano('(0) Vd - Plano Digital 800')">(0) Vd - Plano Digital 800</div>
+                    <div onclick="selecionarPlano('(0) Vd - Plano Digital 900')">(0) Vd - Plano Digital 900</div>
+                    <div onclick="selecionarPlano('(0) Vd - Plano Digital 900 Digiflix')">(0) Vd - Plano Digital 900 Digiflix</div>
+                    <div onclick="selecionarPlano('(0) Vd - Plano Digital 900 Casa Conectada')">(0) Vd - Plano Digital 900 Casa Conectada</div>
+                </div>
+            </div>
+        </div>
+            <div class="form-group">
+                <label for="motivo">Motivo</label>
+                <input type="text" id="motivo" name="motivo" rows="1">
+            </div>               
+            <div class="agendamento-container">
+                <div class="agendamento-item">
+                    <div class="form-group">
+                        <label for="agendado1">A Data do Agendamento Atual:</label>
+                        <input type="date" id="agendado1" name="agendado">
+                    </div>
+                    <div class="periodo-container">
+                        <label for="periodo1" class="label-periodo">
+                            Período:
+                        </label>
+                        <select id="periodo1" onchange="selecionarHorario(this.value)">
+                            <option value="">Selecione o período</option>
+                            <option value="Qualquer Horario">Qualquer Horario</option>
+                            <option value="Manhã (07:30 às 12:00)">Manhã (07:30 às 12:00)</option>
+                            <option value="Tarde (13:00 às 17:00)">Tarde (13:00 às 17:00)</option>
+                            <option value="Noite (17:00 às 20:00)">Noite (17:00 às 20:00)</option>
+                        </select>
+                        <button type="button" class="small-button" onclick="mostrarAlerta()">✔</button>
+                    </div>
+                </div>
+                
+                <div class="agendamento-item">
+                    <div class="form-group">
+                        <label for="agendado2">Data do Interesse do Agendamento:</label>
+                        <input type="date" id="agendado2" name="agendado">
+                    </div>
+                    <div class="periodo-container">
+                        <label for="periodo2" class="label-periodo">
+                            Período:
+                        </label>
+                        <select id="periodo2" onchange="selecionarHorario(this.value)">
+                            <option value="">Selecione o período</option>
+                            <option value="Qualquer Horario">Qualquer Horario</option>
+                            <option value="Manhã (07:30 às 12:00)">Manhã (07:30 às 12:00)</option>
+                            <option value="Tarde (13:00 às 17:00)">Tarde (13:00 às 17:00)</option>
+                            <option value="Noite (17:00 às 20:00)">Noite (17:00 às 20:00)</option>
+                        </select>
+                        <button type="button" class="small-button" onclick="mostrarAlerta()">✔</button>
+                    </div>
+                </div>
+            </div>
+                <div class="form-group">
+                    <label for="Obs">Obs:</label>
+                    <textarea id="Obs" name="Obs" rows="3"></textarea>
+                </div>
+        <div class="form-actions">
+            <button type="button" onclick="copiarDadosFalhaMassiva()">Copiar Dados</button>
+            <button type="button" onclick="zerarDadosAtendimento()">Zerar Dados</button>
+        </div>
+    </form>
+        </div>
+</div>
+</body>
+</html>

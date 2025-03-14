@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aplicativos</title>
+<style>
+    /* Estilos principais */
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #295ba5;
+        color: #ffffff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        padding: 20px;
+    }
+
+    .container {
+        background-color: rgba(0, 0, 0, 0.5); /* Preto com 50% de transparência */
+        border-radius: 10px;
+        padding: 30px;
+        width: 100%;
+        max-width: 600px;
+        text-align: center;
+        border: 2px solid #dadf3f;
+        position: relative;
+    }
+
+    h1 {
+        color: #dadf3f;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+        text-align: left;
+        width: 100%; /* Agora cada form-group ocupa toda a largura */
+    }
+
+    .form-group-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px; /* Espaço entre os campos */
+        }
+
+        .form-group select {
+    margin-bottom: 8px; /* Aumenta a distância entre as text areas */
+}
+
+    label {
+        display: block;
+        margin-bottom: 5px;
+        color: #ffffff;
+    }
+
+    input[type="text"], input[type="tel"], textarea, select, input[type="date"] {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #dadf3f;
+        border-radius: 5px;
+        background-color: #e0e0e0;
+        color: #000;
+    }
+
+    button {
+        background-color: #dadf3f;
+        color: #000;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 15px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    button:hover {
+        background-color: #a5c527;
+    }
+
+    .form-actions {
+        margin-top: 20px;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .notification {
+        display: none;
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #dadf3f;
+        color: #000000;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 16px;
+        z-index: 1000;
+    }
+
+/* Estilo do balão de informações */
+.info-balao {
+    position: absolute;
+    top: 0;
+    left: 105%; /* Ajuste o balão para a direita do container */
+    width: 200px;
+    padding: 15px;
+    background-color: #fff;
+    color: #000;
+    border-radius: 8px;
+    border: 2px solid #dadf3f;
+    visibility: hidden;
+    z-index: 100;
+}
+
+.info-balao.active {
+    visibility: visible;
+}
+
+.info-balao h3 {
+    margin-top: 0;
+    color: #dadf3f;
+}
+</style>
+    
+<script>
+    // Função para mostrar uma notificação temporária
+    function mostrarNotificacao(mensagem) {
+        const notificacao = document.getElementById('notification');
+        notificacao.textContent = mensagem;
+        notificacao.style.display = 'block';
+        setTimeout(() => {
+            notificacao.style.display = 'none';
+        }, 3000);
+    }
+
+    function copiarConteudoBalao() {
+        const conteudo = document.getElementById("conteudoBalao").innerText;
+        const textarea = document.createElement("textarea");
+        textarea.value = conteudo;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+    }
+    
+    // Função para copiar os dados de falha massiva
+    function copiarDadosFalhaMassiva() {
+        const procedimentoSelecionado = document.getElementById('procedimentos').value || "Nenhum procedimento selecionado";
+        const confirmacaosimenao = document.getElementById('confirmacao').value || "Nenhum procedimento selecionado";
+        const confirmacaosimenao2 = document.getElementById('confirmacao2').value || "Nenhum procedimento selecionado";
+        const nome = document.getElementById('nome').value || "N/A";
+        const telefone = document.getElementById('telefone').value || "N/A";
+        const protocolo = document.getElementById('protocolo').value || "N/A";
+        const Obs1 = document.getElementById('Obs').value || "Nenhum procedimento selecionado";
+        
+        const texto = 
+`
+Aplicativo: ${procedimentoSelecionado}
+
+Realizou a ativação: ${confirmacaosimenao}
+Cliente conseguiu acessar: ${confirmacaosimenao2}
+
+Nome: ${nome} ${telefone}
+Protocolo: ${protocolo}
+
+Observação: ${Obs1}
+`;
+
+        navigator.clipboard.writeText(texto).then(() => {
+            mostrarNotificacao('Dados copiados para a área de transferência!');
+        }).catch(err => {
+            console.error('Falha ao copiar!', err);
+        });
+    }
+
+    // Função para zerar os dados do formulário
+    function zerarDadosAtendimento() {
+        document.getElementById('form-falhamassiva').reset();
+    }
+
+    function preenchervoltar() {
+        window.location.href = 'Mascara 2.0.html';
+    }
+
+    function portaldoassinante() {
+        window.open("https://portaldoassinante.com/digitalnetms", "_blank");
+    }
+
+ // Função para adicionar conteúdo ao balão de informações
+ function adicionarProcedimento() {
+            const procedimentos = document.getElementById('procedimentos').value;
+            const infoConteudo = document.getElementById('conteudoBalao'); // ID correto aqui
+            const infoBalao = document.getElementById('info-balao'); // ID correto do balão
+
+            let informacao = '';
+
+            switch (procedimentos) {
+                case 'Paramount':
+                    informacao = 'Paramount: Plataforma de streaming com filmes e séries. <br><br> 1. Acesse a caixa de entrada <br><br> Abra o e-mail encaminhado pela WATCH em sua caixa de entrada e clique em "FAZER LOGIN". <br><br> 2. Cadastre sua senha <br><br> Digite seu nome completo e cadastre a sua senha. <br><br> 3. Faça seu cadastro <br><br> Preencha o formulário com seus dados e clique em "Criar conta". <br><br> 4. Acesse o site <br><br> Acesse em seu navegador o site <a href="www.paramountplus.com" target="blank">www.paramountplus.com<a/> e clique em "FAZER LOGIN COM O PARCEIRO". <br><br> 5. Escolha o parceiro <br><br> Clique no ícone WATCH <br><br> 6. Crie conta <br><br> Clique em "CRIE UMA CONTA". <br><br> 7. Crie sua conta Paramount <br><br> Preencha os dados e clique em "CONCORDAR E CONTINUAR". <br><br> 8. Escolha seu Perfil <br><br> Clique no ícone com o seu nome <br><br> 9. Tudo pronto <br><br> Agora é só curtir suas séries e filmes favoritos da Paramount com sua DigitalNet.';
+                    break;
+                case 'Deezer':
+                    informacao = 'Como fazer o login: <br><br> 1.Você vai receber um link por SMS para ativação do Deezer Premium. Clique no link; <br><br> 2.Escolha entre conectar uma conta gratuita já existente ou criar uma nova; <br><br> 3.Insira os dados da conta que quer conectar ou da nova conta; <br><br> 4.Se o app Deezer já estiver no seu celular, ele será aberto com o seu usuário já logado. Se não, você será direcionado a App Store/Google Play Store para baixá-lo; <br><br> 5.No momento em que logar no app, aparecerá um campo para colocar o código do link enviado por SMS (item 1); <br><br> 6. Coloque o código e prossiga; <br><br> 7.Tudo pronto, aumente o som! <br><br> Link de reativação Deezer <a href="https://www.deezer.com/br/activate/playhubbr" target="_blank">https://www.deezer.com/br/activate/playhubbr</a>' ;
+                    break;
+                    case 'Looke':
+                    informacao = 'Como fazer o login: <br>1. Acesse: <a href="https://www.looke.com.br/" target="_blank">https://www.looke.com.br</a><br>2. Clique em “Entrar” e clique em “Login com operadora”<br>3. Selecione a PLAYHUB<br>4. Clique em “Ative seu plano”<br>5. Cadastre seu CELULAR e CPF e clique em “VALIDAR”<br>6. Preencha e-mail e escolha uma senha!<br>7. Pronto, sua conta está criada e pronta para uso!<br><a href="https://www.looke.com.br" target="_blank">https://www.looke.com.br</a> '
+                    break;
+                case 'NOPing':
+                    informacao = 'Uma ferramenta essencial para qualquer gamer, o NoPing melhora a conectividade, reduz o lag, além de uma série de recursos para otimizar a experiência gamer. <br><br> Como fazer login: <br><br> 1. Para ativar o seu login, clique no link que você vai receber por SMS ou acesse o link a seguir: <a hred="https://activate.noping.com/"; <br><br> 2. Insira seu CPF e clique em “iniciar cadastro”; <br><br> 3. Finalize o cadastro inserindo um e-mail e senha de sua escolha e depois clique em “definir senha”, para concluir seu cadastro. <br><br> 4. Agora baixe o aplicativo clicando no botão “Download” ao lado direito da tela; <br><br> 5. Insira seu e-mail e senha, e clique em “Log In”. <br><br> 6. Agora, clique em “start now” e após isso, vá para as configurações para alterar o idioma; <br><br> 7. No campo “NoPing Languages” clique na setinha para abaixo e selecione o idioma de preferência (Inglês/Português). Prontinho! Agora é só curtir seus jogos favoritos. <br><br> <a href="https://noping.com/" target="_blank">https://noping.com/" ';
+                    break;
+                case 'Skeelo':
+                    informacao = 'Skeelo: Aplicativo de leitura digital de livros e revistas. <br><br> Como fazer login: <br><br> 1. Cadastro <br> Crie uma conta com nom, e-mail e senha, após seu primeiro faturamento <br><br> 2. Verificar agora: <br> Preencha o campo com o seu numero de celular e CPF <br><br> 3. Confirmação de parceria: <br> Confirmeo retorno sobre a validação. ';
+                    break;
+                    case 'PlayKids':
+                    informacao = 'Ofereça diversão, aprendizado e muito conteúdo para o seu filho com o melhor conteúdo infantil. <br><br> Como fazer o login: 1. Acesse o site <a href="https://playkids.com/ target="_blank">https://playkids.com/</a> <br><br> 2. Clique em “Entrar” e em seguida em “Cadastre-se ou resgate via parceiro”; <br><br> 3. Clique em “Continuar via parceiro” e selecione “Continuar via provedor de internet”; <br><br> 4. Após, você será direcionado a uma outra tela na qual deve digitar as 3 primeiras letras do seu provedor (Isp) e selecioná-lo; <br><br> 5. Insira o login e senha informados pelo seu provedor e clique em “Validar”; <br><br> 6. Para acessar crie sua conta Playkids+ ou acesse sua conta caso já tenha.; <br><br> Acessar sua conta <br><br> 1. Acesse sua conta clicando em “Clique aqui para entrar”; <br><br> 2. Preencha as informações de e-mail e senha e clique em “Entrar”; <br><br> 3. Depois, basta clicar em “Confirmar” para concluir o resgate. <br><br> <a href="https://app.playkids.com/parcerias/playhub" target="_blank">https://app.playkids.com/parcerias/playhub</a>';
+                    break;
+                    case 'ubook':
+                    informacao = 'Como fazer o login: <br><br> 1. Para ativar seu login acesse www.ubook.com.br/activate (ou clique no link de ativação abaixo. Em seguida insira seu CPF ou CNPJA e clique em “Continuar”; <br><br> 2. Cadastre seu e-mail, crie uma senha e clique em “Finalizar”;<br><br>3. Pronto! Seu login na Ubook foi criado;<br><br>4. Para acessar os conteúdos, acesse o site plus.ubook.com ou baixe o app! <br><br> Após, faça login com o usuário e senha cadastrados. <br><br> Clique para ativar seu login: <br> <a href="https://www.ubook.com/activate" target="_blank">https://www.ubook.com/activate</a>';
+                    break;
+                    case 'News':
+                    informacao = 'Mantenha-se informado o tempo inteiro sobre o que acontece no Brasil e no mundo com a Ubook News.” <br><br> Como fazer o login: <br><br> 1.Para ativar seu login na Ubook News acesse: <a href="https://www.ubook.com/activate" target="_blank">https://www.ubook.com/activate</a> .<br><br> 2.Insira seu CPF ou CNPJ e clique em continuar <br><br> 3.Cadastre seu e-mail. <br><br> 4.Crie uma senha e clique em “Finalizar” <br><br> 5.Pronto! Seu login na Ubook News está criado. <br><br> 6.Você pode acessar os conteúdos pelo site, ou utilizando os aplicativos fazendo login com login e senha cadastrados. <br><br> <a href="https://www.ubook.com" target="_blank">https://www.ubook.com</a>';
+                    break;
+                    case 'HUBE':
+                    informacao = '';
+                    break;
+                    case 'Social Comics':
+                    informacao = '';
+                    break;
+                    case 'pequenoleitores':
+                    informacao = '';
+                    break;
+                    case 'Leitura360':
+                    informacao = 'O aplicativo ideal para acompanhar notícias e revistas. <br><br> Como fazer login:<br><br> 1. Para ativar seu login no Leitura 360 acesse o link: <a href="https://www.leitura360app.com.br/activate" target="_blank">https://www.leitura360app.com.br/activate</a> <br><br> 2. Insira seu CPF ou CNPJ e clique “Continuar” <br><br> 3. Depois finalize seu cadastro inserindo um e-mail e senha de sua preferência e clique em “Finalizar”.<br><br> 4. Baixe o app do Leitura 360;<br><br> 5. Na tela inicial selecione a opção “ENTRAR”. Em seguida, insira o e-mail e senha da conta criada no link de ativação.<br><br> 6. Feito isso, clique em “ENTRAR” e pronto! Aproveite suas revistas no Leitura 360.<br><br> <a href="https://www.leitura360app.com.br/activate" target="_blank"> https://www.leitura360app.com.br/activate</a>';
+                    break;
+                    case 'Kaspersky':
+                    informacao = '';
+                    break;
+                    case '+QNutri':
+                    informacao = '';
+                    break;
+                    case 'Fluid':
+                    informacao = '';
+                    break;
+                    case 'Zen':
+                    informacao = '';
+                    break;
+                // Adicione mais casos conforme necessário
+                default:
+                    informacao = 'Selecione um aplicativo para ver detalhes.';
+            }
+
+            infoConteudo.innerHTML = informacao;
+
+            // Torna o balão visível
+            infoBalao.classList.add('active');
+        }
+
+</script>
+</head>
+<body>
+<div id="notification" class="notification"></div>
+
+<div class="container">
+    <h1>Aplicativos</h1>
+    <div><button type="button" id="btnvoltar" onclick="preenchervoltar()">Voltar</button>
+        <button type="button" id="btnassinante" onclick="portaldoassinante()">Portal do Assinante</button>
+    </div>
+    <form id="form-falhamassiva">
+        <div class="form-group">
+            <label for="procedimentos">Aplicativos</label>
+                                <select id="procedimentos" onchange="adicionarProcedimento()">
+                <option value="">Selecione...</option>
+                <option value="Paramount">Paramount</option>
+                <option value="Deezer">Deezer</option>
+                <option value="Looke">Looke</option>
+                <option value="NOPing">NOPing</option>
+                <option value="Skeelo">Skeelo</option>
+                <option value="PlayKids">PlayKids</option>
+                <option value="ubook">ubook</option>
+                <option value="News">News</option>
+                <option value="HUBE">HUBE</option>
+                <option value="Social Comics">Social Comics</option>
+                <option value="pequenoleitores">Pequenos Leitores</option>
+                <option value="Leitura360">Leitura360</option>
+                <option value="Kaspersky">Kaspersky</option>
+                <option value="+QNutri">+QNutri</option>
+                <option value="Fluid">Fluid</option>
+                <option value="Zen">Zen</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="confirmacao">Realizado ativação</label>
+                                <select id="confirmacao" onchange="adicionarConfirmacao()">
+                <option value="">Selecione...</option>
+                <option value="Sim">Sim</option>
+                <option value="Não">Não</option>
+                <option value="reativação">Reativação</option>
+            </select>
+            <div class="form-group">
+                <label for="confirmacao2">Cliente conseguiu acessar:</label>
+                                    <select id="confirmacao2" onchange="adicionarConfirmacao2()">
+                    <option value="">Selecione...</option>
+                    <option value="Sim">Sim</option>
+                    <option value="Não">Não</option>
+                    <option value="Deixou para outra hora">Deixou para outra hora</option>
+                    <option value="Ausente">Ausente</option>
+                </select>
+                <div class="form-group">
+                    <label for="nome">Nome:</label>
+                    <input type="text" id="nome" name="nome" rows="1">
+                </div>
+                <div class="form-group">
+                    <label for="telefone">Telefone:</label>
+                    <input type="tel" id="telefone" name="telefone">
+                </div>
+                <div class="form-group">
+                    <label for="protocolo">Protocolo:</label>
+                    <textarea id="protocolo" name="protocolo" rows="1"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="Obs">Obs:</label>
+                    <textarea id="Obs" name="Obs" rows="3"></textarea>
+                </div>
+        <div class="form-actions">
+            <button type="button" onclick="copiarDadosFalhaMassiva()">Copiar Dados</button>
+            <button type="button" onclick="zerarDadosAtendimento()">Zerar Dados</button>
+        </div>
+    </form>
+            <!-- Balão de informações -->
+            <div class="info-balao" id="info-balao">
+                <h3>Informações</h3>
+                <p id="conteudoBalao">Aqui estão as informações a serem copiadas...</p>
+                <button onclick="copiarConteudoBalao()">Copiar</button>
+            </div>
+        </div>
+</div>
+</body>
+</html>

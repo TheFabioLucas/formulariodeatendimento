@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aplicativos</title>
+<style>
+    /* Estilos principais */
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #295ba5;
+        color: #ffffff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        padding: 20px;
+    }
+
+    .container {
+        background-color: rgba(0, 0, 0, 0.5); /* Preto com 50% de transparência */
+        border-radius: 10px;
+        padding: 30px;
+        width: 100%;
+        max-width: 600px;
+        text-align: center;
+        border: 2px solid #dadf3f;
+        position: relative;
+    }
+
+    h1 {
+        color: #dadf3f;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+        text-align: left;
+        width: 100%; /* Agora cada form-group ocupa toda a largura */
+    }
+
+    .form-group-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px; /* Espaço entre os campos */
+        }
+
+        .form-group select {
+    margin-bottom: 8px; /* Aumenta a distância entre as text areas */
+}
+
+    label {
+        display: block;
+        margin-bottom: 5px;
+        color: #ffffff;
+    }
+
+    input[type="text"], input[type="tel"], textarea, select, input[type="date"] {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #dadf3f;
+        border-radius: 5px;
+        background-color: #e0e0e0;
+        color: #000;
+    }
+
+    button {
+        background-color: #dadf3f;
+        color: #000;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 15px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    button:hover {
+        background-color: #a5c527;
+    }
+
+    .form-actions {
+        margin-top: 20px;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .notification {
+        display: none;
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #dadf3f;
+        color: #000000;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 16px;
+        z-index: 1000;
+    }
+
+</style>
+    
+<script>
+    // Função para mostrar uma notificação temporária
+    function mostrarNotificacao(mensagem) {
+        const notificacao = document.getElementById('notification');
+        notificacao.textContent = mensagem;
+        notificacao.style.display = 'block';
+        setTimeout(() => {
+            notificacao.style.display = 'none';
+        }, 3000);
+    }
+
+    
+    // Função para copiar os dados de falha massiva
+    function copiarDadosFalhaMassiva() {
+        const tipo1 = document.getElementById('confirmacao').value || "Nenhum procedimento selecionado";
+        const numero1 = document.getElementById('numero').value || "Nenhum procedimento selecionado";
+        const data1 = document.getElementById('data').value || "Nenhum procedimento selecionado";
+        const reagendamentoInput = document.getElementById('reagendamento');
+        const reagendamento1 = reagendamentoInput ? reagendamentoInput.value : "Não reagendado";
+        // Verifica se o campo de cancelamento existe e captura o valor
+        const cancelamentoInput = document.getElementById('motivo-cancelamento');
+        const cancelamento = cancelamentoInput ? cancelamentoInput.value : "N/A";
+        const nome = document.getElementById('nome').value || "N/A";
+        const telefone = document.getElementById('telefone').value || "N/A";
+        const protocolo = document.getElementById('protocolo').value || "N/A";
+        const Obs1 = document.getElementById('Obs').value || "Nenhuma observação a acrescentar";
+        
+        const texto = 
+`
+${tipo1}
+
+Número da OS: ${numero1}
+${data1}${reagendamento1}${cancelamento}
+Nome: ${nome} ${telefone}
+Protocolo: ${protocolo}
+
+Observação: ${Obs1}
+`;
+
+        navigator.clipboard.writeText(texto).then(() => {
+            mostrarNotificacao('Dados copiados para a área de transferência!');
+        }).catch(err => {
+            console.error('Falha ao copiar!', err);
+        });
+    }
+
+    // Função para zerar os dados do formulário
+    function zerarDadosAtendimento() {
+        document.getElementById('form-falhamassiva').reset();
+    }
+
+    function preenchervoltar() {
+        window.location.href = 'Mascara 2.0.html';
+    }
+
+
+    function adicionarConfirmacao() {
+    const confirmacaoSelect = document.getElementById('confirmacao').value;
+    
+    const reagendamentoContainer = document.getElementById('reagendamento-container');
+    const cancelamentoContainer = document.getElementById('cancelamento-container');
+    
+    // Esconde ambos os campos por padrão
+    reagendamentoContainer.style.display = 'none';
+    cancelamentoContainer.style.display = 'none';
+    
+    if (confirmacaoSelect === 'Reagendamento') {
+        // Exibe o campo de reagendamento se for selecionado "Reagendamento"
+        reagendamentoContainer.style.display = 'block';
+    } else if (confirmacaoSelect === 'cancelamento') {
+        // Exibe o campo de cancelamento se for selecionado "Cancelamento"
+        cancelamentoContainer.style.display = 'block';
+    }
+}
+
+</script>
+</head>
+<body>
+<div id="notification" class="notification"></div>
+
+<div class="container">
+    <h1>Verificação de agendamentos</h1>
+    <div><button type="button" id="btnvoltar" onclick="preenchervoltar()">Voltar</button>
+    </div>
+    <form id="form-falhamassiva">
+        <div class="form-group">
+            <label for="confirmacao">Tipo de Verificação</label>
+            <select id="confirmacao" onchange="adicionarConfirmacao()">
+                <option value="">Selecione...</option>
+                <option value="Apenas verificação de agendamento">Apenas verificação de agendamento</option>
+                <option value="Reagendamento">Reagendamento de OS</option>
+                <option value="cancelamento">Cancelamento de OS</option>
+            </select>
+        </div>
+            <div class="form-group">
+                <label for="numero">Numero da OS:</label>
+                <input type="text" id="numero" name="numero" rows="1">
+            </div>               
+            <div class="form-group">
+                <label for="data">Data de agendamento</label>
+                <input type="text" id="data" name="data" rows="1">
+            </div>
+            <!-- Divs de reagendamento e cancelamento inicialmente escondidas -->
+<div id="reagendamento-container" class="form-group" style="display:none;">
+    <label for="reagendamento">Data de reagendamento</label> 
+    <input type="text" id="reagendamento" name="reagendamento" rows="1">
+</div>
+
+<div id="cancelamento-container" class="form-group" style="display:none;">
+    <label for="motivo-cancelamento">Motivo do Cancelamento</label> 
+    <input type="text" id="motivo-cancelamento" name="motivo-cancelamento" rows="1">
+</div>
+                <div class="form-group">
+                    <label for="nome">Nome:</label>
+                    <input type="text" id="nome" name="nome" rows="1">
+                </div>
+                <div class="form-group">
+                    <label for="telefone">Telefone:</label>
+                    <input type="tel" id="telefone" name="telefone">
+                </div>
+                <div class="form-group">
+                    <label for="protocolo">Protocolo:</label>
+                    <textarea id="protocolo" name="protocolo" rows="1"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="Obs">Obs:</label>
+                    <textarea id="Obs" name="Obs" rows="3"></textarea>
+                </div>
+        <div class="form-actions">
+            <button type="button" onclick="copiarDadosFalhaMassiva()">Copiar Dados</button>
+            <button type="button" onclick="zerarDadosAtendimento()">Zerar Dados</button>
+        </div>
+    </form>
+        </div>
+</div>
+</body>
+</html>
